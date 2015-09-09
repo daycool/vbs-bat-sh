@@ -1,8 +1,30 @@
 Dim fso, JSON, jsonStr, o, i, obj
-Dim wsh, AppPath, code
+Dim wsh, AppPath, code, cmdsJSONStr, argscount, key , replaceWith
 
 cmdsConfigFile = "cmdsConfig.json"
+Set oArgs = WScript.Arguments
+argscount = oArgs.count
 
+If argscount > 0 Then
+    cmdsJSONStr = oArgs(0) 
+End If
+
+if(argscount) > 1 Then
+    key = oArgs(1)
+End If
+
+if(argscount) > 2 Then
+    replaceWith = oArgs(2)
+End If
+
+if replaceWith = "" Then
+    replaceWith = """"
+End If
+
+cmdsJSONStr = Replace(cmdsJSONStr, key, replaceWith)
+
+jsonStr = cmdsJSONStr
+msgBox jsonStr
 Include("vbsJson.vbs")
 Set JSON = New VbsJson
 Set fso = WScript.CreateObject("Scripting.Filesystemobject")
@@ -12,8 +34,10 @@ else
     msgbox "请在当前目录下添加命令配置文件:"&cmdsConfigFile
     Wscript.Quit
 end if
+if jsonStr = "" Then
+    jsonStr = fso.OpenTextFile(cmdsConfigFile).ReadAll
+End If
 
-jsonStr = fso.OpenTextFile(cmdsConfigFile).ReadAll
 Set obj = JSON.Decode(jsonStr)
 
 
